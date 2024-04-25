@@ -132,7 +132,7 @@
 
 
 
-                foreach (Item item in myItems)                                  //무기 꼈는지 체크
+                foreach (Item item in myItems)                                  
                 {
                     if (item.type == 1)
                     {
@@ -143,7 +143,7 @@
                     }
                 }
 
-                foreach (Item item in myItems)                      // 방어구 아이템 꼈는지 체크
+                foreach (Item item in myItems)                     
                 {
                     if (item.type == 2)
                     {
@@ -153,7 +153,7 @@
                         }
                     }
                 }
-                foreach (Item item in myItems)                      // 방어구 아이템 꼈는지 체크
+                foreach (Item item in myItems)                   
                 {
                     if (item.type == 3)
                     {
@@ -289,7 +289,7 @@
 
                 }
             }
-            void InventoryManagerScreen()
+            void InventoryManagerScreen() // 장착관리 씬
             {
                 Console.Clear();
                 Console.WriteLine("인벤토리 - 장착 관리");
@@ -546,7 +546,7 @@
                 }
             }
 
-            void BuyItem()
+            void BuyItem() //구매씬
             {
                 Console.Clear();
                 Console.WriteLine("상점 - 아이템 구매\n필요한 아이템을 얻을 수 있는 상점입니다.\n\n[보유 골드]");
@@ -650,7 +650,7 @@
                 }
 
             }
-            void SeleItem()
+            void SeleItem() //판매씬
             {
                 Console.Clear();
                 Console.WriteLine("상점 - 아이템 판매");
@@ -777,16 +777,14 @@
     }// Character class
     public class Item
     {
-        public string name = ""; // 이름
-        public int type = 0;
-        public float value = 0;
+        public string name = "";
+        public int type = 0; // 1 = 무기, 2 = 방어구, 3 = 방패
+        public float value = 0; 
         public string information = "";
         public int gold = 0;
-        public bool get = false;
-        public bool equip = false;
-        public int number = 0;
-
-        //이름 타입 능력치 정보 가격 아이템코드
+        public bool get = false; // 소지여부
+        public bool equip = false; // 장착여부
+        public int number = 0; //아이템 코드
 
         public void SetItem(string Name, int Type, float Value, string Information, int Price, int num)
         {
