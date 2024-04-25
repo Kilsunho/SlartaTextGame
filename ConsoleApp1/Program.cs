@@ -1,22 +1,33 @@
-﻿namespace Game
+﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+
+
+namespace Game
 {
     internal class GameStart
     {
         static int thisscreen = 0;
         static void Main(string[] args)
         {
-            bool gameStart = true;
+            bool gameStart = true;   //화면의 활성화 여부 확인
             bool characterScreen = false;
             bool inventoryScreen = false;
             bool shopScreen = false;
             bool InventorymanagerScreen = false;
-            bool buyitem = false;
-            bool saleitem = false;
+            bool dungeonScreen = false;
+            bool buyitemScreen = false;
+            bool saleitemScreen = false;
+
             int select = 0;
             thisscreen = 1;
 
             //if 세이브가 있다면 진행 없다면 직업선택 창 뜨게하기
 
+            //JObject saveData = new JObject(
+            //    new JProperty
+            //    );
 
             Character character = new Character();
             character.Lv = 1;
@@ -55,14 +66,14 @@
                 Console.WriteLine("\n1. 상태 보기\n2. 인벤토리\n3. 상점\n0. 게임 종료");
                 Console.WriteLine("\n원하시는 행동을 입력해주세요.");
                 Console.Write(">>");
-                select = ReadNum(3);
+                select = ReadNum(3); // ReadNum을 통해서 숫자인지 확인 , int 값을 입력받아 메뉴 숫자중 하나를 입력했는지 확인
                 switch (select)
                 {
                     case 0:
                         Console.WriteLine("게임을 종료합니다.");
                         gameStart = false;
                         break;
-                    case 1:
+                    case 1: 
                         characterScreen = true;
                         do
                         {
@@ -83,16 +94,23 @@
                             ShopScreen();
                         } while (shopScreen);
                         break;
+                    case 4:
+                        dungeonScreen = true;
+                        do
+                        {
+                            DungeonScreen();
+                        } while (dungeonScreen);
+                        break;
 
                 }
             } while (gameStart);
 
-            static void Error()
+            static void Error() // 입력이숫자가 아니거나 메뉴중 없는 입력하면 호출
             {
                 Console.WriteLine("잘못된 입력입니다.");
                 Console.Write(">>");
             }
-            static int ReadNum(int i)
+            static int ReadNum(int i) // 사용자가 입력한 값이 숫자인지 확인 후 i라는 메뉴 수를 받아 이외의 숫자가 입력되면 Error함수 호출
             {
                 int menuNum = i;
                 int select = 0;
@@ -107,7 +125,7 @@
                     }
                     if (select == 0)
                     {
-
+                        return select;
                     }
                     else if (select > menuNum)
                     {
@@ -115,6 +133,7 @@
                     }
                 } while (!selectchek || select > menuNum);
                 return select;
+
             }// 사용자 입력값 받기
 
 
@@ -271,8 +290,8 @@
                         }
                     }
                 }
-                Console.WriteLine("\n1. 장착 관리\n0. 나가기\n\n원하시는 행동을 입력해주세요.");
-                Console.Write(">>");
+                Console.WriteLine("\n1. 장착 관리");
+                BackMessage();
                 int select = ReadNum(1);
                 switch (select)
                 {
@@ -438,11 +457,11 @@
                 Console.WriteLine("필요한 아이템을 얻을 수 잇는 상점입니다.\n\n[보유 골드]");
                 Console.WriteLine($"{character.gold} G\n");
                 Console.WriteLine("[아이템 목록]");
-                for (int i = 0; i < shopItems.Length; i++)
+                for (int i = 0; i < shopItems.Length; i++) //상점 아이템 수만큼 반복
                 {
                     if (!shopItems[i].get)
                     {
-                        if (shopItems[i].type == 1)
+                        if (shopItems[i].type == 1) // 무기 출력
                         {
                             if (shopItems[i].value > 9)
                             {
@@ -454,7 +473,7 @@
                             }
                         }
 
-                        else if (shopItems[i].type == 2)
+                        else if (shopItems[i].type == 2) // 방어구 출력
                         {
                             if (shopItems[i].value > 9)
                             {
@@ -465,7 +484,7 @@
                                 Console.WriteLine($"- {shopItems[i].name}| 방어력 +{shopItems[i].value}  | {shopItems[i].information}| {shopItems[i].gold} G");
                             }
                         }
-                        else if (shopItems[i].type == 3)
+                        else if (shopItems[i].type == 3) // 방패 출력
                         {
                             if (shopItems[i].value > 9)
                             {
@@ -515,9 +534,7 @@
                         }
                     }
                 }
-                Console.WriteLine("\n1. 아이템 구매\n2. 아이템 판매\n0. 나가기\n\n원하시는 행동을 입력해주세요.");
-                Console.Write(">>");
-
+                BackMessage();
                 int shopAction = ReadNum(2);
 
                 switch (shopAction)
@@ -526,27 +543,27 @@
                         shopScreen = false;
                         break;
                     case 1:
-                        buyitem = true;
+                        buyitemScreen = true;
 
                         do
                         {
-                            BuyItem();
+                            BuyItemScreen();
                         }
-                        while (buyitem);
+                        while (buyitemScreen);
 
                         break;
                     case 2:
-                        saleitem = true;
+                        saleitemScreen = true;
                         do
                         {
-                            SeleItem();
+                            SeleItemScreen();
                         }
-                        while (saleitem);
+                        while (saleitemScreen);
                         break;
                 }
             }
 
-            void BuyItem() //구매씬
+            void BuyItemScreen() //구매씬
             {
                 Console.Clear();
                 Console.WriteLine("상점 - 아이템 구매\n필요한 아이템을 얻을 수 있는 상점입니다.\n\n[보유 골드]");
@@ -617,29 +634,39 @@
                                 Console.WriteLine($"- {i + 1} {shopItems[i].name}| 방어력 +{shopItems[i].value}  | {shopItems[i].information}| 구매완료");
                             }
                         }
+                        else if (shopItems[i].type == 3)
+                        {
+                            if (shopItems[i].value > 9)
+                            {
+                                Console.WriteLine($"- {i + 1} {shopItems[i].name}| 방어력 +{shopItems[i].value} | {shopItems[i].information}| 구매완료");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"- {i + 1} {shopItems[i].name}| 방어력 +{shopItems[i].value}  | {shopItems[i].information}| 구매완료");
+                            }
+                        }
                     }
                 }
-                Console.WriteLine("\n0. 나가기\n\n원하시는 행동을 입력해주세요.");
-                Console.Write(">>");
+                BackMessage();
 
-                int buyAction = ReadNum(shopItems.Length);
+                int select = ReadNum(shopItems.Length);
 
-                if (buyAction == 0)
+                if (select == 0)
                 {
-                    buyitem = false;
+                    buyitemScreen = false;
                 }
-                else if (shopItems[buyAction - 1].get)
+                else if (shopItems[select - 1].get)
                 {
                     Console.WriteLine("이미 구매한 아이템입니다.");
                 }
                 else
                 {
-                    if (character.gold >= shopItems[buyAction - 1].gold)
+                    if (character.gold >= shopItems[select - 1].gold)
                     {
                         Console.WriteLine("구매를 완료했습니다.\n(앤터를 눌러주세요)");
-                        character.gold -= shopItems[buyAction - 1].gold;
-                        shopItems[buyAction - 1].get = true;
-                        myItems.Add(shopItems[buyAction - 1]);
+                        character.gold -= shopItems[select - 1].gold;
+                        shopItems[select - 1].get = true;
+                        myItems.Add(shopItems[select - 1]);
                         Console.ReadLine();
                     }
                     else
@@ -650,7 +677,7 @@
                 }
 
             }
-            void SeleItem() //판매씬
+            void SeleItemScreen() //판매씬
             {
                 Console.Clear();
                 Console.WriteLine("상점 - 아이템 판매");
@@ -736,31 +763,52 @@
                         }
                     }
                 }
-                Console.WriteLine("\n0. 나가기\n\n원하시는 행동을 입력해주세요.");
-                Console.Write(">>");
-
-                int saleAction = ReadNum(myItems.Count);
-
-                if (saleAction == 0)
+                BackMessage();
+                select = ReadNum(myItems.Count);
+                if (select == 0)
                 {
-                    saleitem = false;
+                    saleitemScreen = false;
                 }
                 else
                 {
                     int sellConfirm = 0;
-                    Console.WriteLine($"정말 {myItems[saleAction - 1].name}을(를) 판매하시겠습니까?\n1. 예\n0. 아니오");
+                    Console.WriteLine($"정말 {myItems[select - 1].name}을(를) 판매하시겠습니까?\n1. 예\n0. 아니오");
                     Console.Write(">>");
                     sellConfirm = ReadNum(1);
                     if (sellConfirm == 1)
                     {
-                        character.gold += (myItems[saleAction - 1].gold * 85 / 100);
-                        myItems[saleAction - 1].equip = false;
-                        myItems[saleAction - 1].get = false;
-                        myItems.RemoveAt(saleAction - 1);
+                        character.gold += (myItems[select - 1].gold * 85 / 100);
+                        myItems[select - 1].equip = false;
+                        myItems[select - 1].get = false;
+                        myItems.RemoveAt(select - 1);
                     }
 
                 }
 
+            }
+
+            void DungeonScreen()
+            {
+                Console.Clear();
+                Console.WriteLine("던전입장");
+                Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
+                Console.WriteLine("1. 쉬운 던전      | 방어력 5 이상 권장");
+                Console.WriteLine("2. 일반 던전      | 방어력 11 이상 권장");
+                Console.WriteLine("3. 어려운 던전    | 방어력 17 이상 권장");
+
+                BackMessage();
+                select = ReadNum(3);
+                switch (select)
+                {
+                    case 0:
+                        dungeonScreen = false;
+                        break;
+                }
+            }
+            static void BackMessage() // 호출시 뒤로가기 안내가 출력
+            {
+                Console.WriteLine("\n0. 나가기\n\n원하시는 행동을 입력해주세요.");
+                Console.Write(">>");
             }
         }//main 함수
     }// GameStart class
